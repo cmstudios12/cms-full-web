@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>CMSTUDIO | Login</title>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: url('background.jpg') no-repeat center center/cover;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 0;
+    }
+
+    .auth-container {
+      position: relative;
+      z-index: 1;
+      width: 90%;
+      max-width: 380px;
+      padding: 40px 25px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      color: #fff;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .input-group label {
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 16px; /* ✅ Prevent iOS zoom */
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .input-group input::placeholder {
+      color: #ddd;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #ff2b2b;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 15px;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #e02121;
+    }
+
+    .toggle-link {
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #ff2b2b;
+      text-decoration: underline;
+    }
+
+    #signup,
+    #forgot {
+      display: none;
+    }
+
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .loader-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .ellipsis {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ellipsis span {
+      width: 12px;
+      height: 12px;
+      background: #ff2b2b;
+      border-radius: 50%;
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    .ellipsis span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .ellipsis span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+      from {
+        transform: translateY(0);
+        opacity: 0.6;
+      }
+
+      to {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="auth-container">
+    <!-- Sign In -->
+    <form id="signin">
+      <h2>Sign In</h2>
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="signin-email" placeholder="Enter your email" required>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="signin-password" placeholder="Enter your password" required>
+      </div>
+      <div class="options">
+        <label><input type="checkbox" id="remember"> Remember me</label>
+        <span class="toggle-link" onclick="toggleForm('forgot')">Forgot password?</span>
+      </div>
+      <button type="submit" class="btn">Sign In</button>
+      <p>Don't have an account? <span class="toggle-link" onclick="toggleForm('signup')">Sign Up</span></p>
+    </form>
+
+    <!-- Sign Up -->
+    <form id="signup">
+      <h2>Sign Up</h2>
+      <div class="input-group">
+        <label>First Name</label>
+        <input type="text" id="first-name" required>
+      </div>
+      <div class="input-group">
+        <label>Last Name</label>
+        <input type="text" id="last-name" required>
+      </div>
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" required>
+      </div>
+      <div class="input-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" required>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" required>
+      </div>
+      <div class="input-group">
+        <label>Confirm Password</label>
+        <input type="password" id="confirm-password" required>
+      </div>
+      <button type="submit" class="btn">Sign Up</button>
+      <p>Already have an account? <span class="toggle-link" onclick="toggleForm('signin')">Sign In</span></p>
+    </form>
+
+    <!-- Forgot Password -->
+    <form id="forgot">
+      <h2>Reset Password</h2>
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="forgot-email" placeholder="Enter your email" required>
+      </div>
+      <button type="submit" class="btn">Send Reset Link</button>
+      <p>Remembered? <span class="toggle-link" onclick="toggleForm('signin')">Back to Sign In</span></p>
+    </form>
+  </div>
+
+  <!-- Loader -->
+  <div id="loader" class="loader-overlay">
+    <div class="ellipsis">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseUrl = "https://bjvifyxbslfestvcrvui.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqdmlmeXhic2xmZXN0dmNydnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4MDE3MTEsImV4cCI6MjA3MjM3NzcxMX0.yoswqDXTF0ZTRzeEocARiWRJmZA_lKIEGzOd5nTyXFs";
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    function showLoader() { document.getElementById("loader").classList.add("active"); }
+    function hideLoader() { document.getElementById("loader").classList.remove("active"); }
+
+    function toggleForm(form) {
+      document.getElementById("signin").style.display = (form === "signin") ? "block" : "none";
+      document.getElementById("signup").style.display = (form === "signup") ? "block" : "none";
+      document.getElementById("forgot").style.display = (form === "forgot") ? "block" : "none";
+    }
+
+    // Sign Up
+    document.getElementById("signup").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      showLoader();
+      const firstName = document.getElementById("first-name").value;
+      const lastName = document.getElementById("last-name").value;
+      const email = document.getElementById("signup-email").value;
+      const phone = document.getElementById("phone").value;
+      const password = document.getElementById("signup-password").value;
+      const confirm = document.getElementById("confirm-password").value;
+
+      if (password !== confirm) {
+        hideLoader();
+        return alert("Passwords do not match");
+      }
+
+      let { error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { data: { firstName, lastName, phone } }
+      });
+
+      hideLoader();
+      if (error) return alert(error.message);
+
+      alert("Registration successful. Please check your email to confirm, then sign in.");
+      toggleForm("signin");
+    });
+
+    // Sign In
+    document.getElementById("signin").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      showLoader();
+      const email = document.getElementById("signin-email").value;
+      const password = document.getElementById("signin-password").value;
+
+      let { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        hideLoader();
+        return alert(error.message);
+      }
+
+      setTimeout(() => {
+        hideLoader();
+        window.location.href = "index.html";
+      }, 800);
+    });
+
+    // Forgot Password
+    document.getElementById("forgot").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      showLoader();
+      const email = document.getElementById("forgot-email").value;
+
+      let { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: "http://localhost:5500/reset.html"
+      });
+
+      hideLoader();
+      if (error) return alert(error.message);
+
+      alert("Password reset link sent to your email.");
+      toggleForm("signin");
+    });
+  </script>
+</body>
+</html>

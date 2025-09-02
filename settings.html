@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CMSTUDIO Settings</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f9f9fb;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #0a0f2c, #15234b);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      justify-content: space-between;
+      transition: transform 0.3s ease;
+      z-index: 200;
+    }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ff2b2b;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      color: #ccc;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: #ff2b2b;
+      color: #fff;
+    }
+    .logout {
+      margin-top: 20px;
+      padding: 12px 15px;
+      background: #ff2b2b;
+      color: #fff;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .logout:hover {
+      background: #e02121;
+    }
+
+    /* Main */
+    .main {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Topbar */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #15234b;
+    }
+    .profile {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ff2b2b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .profile img {
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #15234b;
+    }
+
+    /* Content */
+    .content {
+      padding: 40px 30px;
+      flex: 1;
+    }
+    .settings-form {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    .settings-form h2 {
+      margin-bottom: 20px;
+      color: #15234b;
+      font-size: 1.4rem;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #15234b;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      font-size: 16px; /* prevents zoom on iOS */
+    }
+    .form-group input:focus {
+      border-color: #ff2b2b;
+    }
+    .save-btn {
+      width: 100%;
+      padding: 12px;
+      background: #ff2b2b;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 16px; /* prevents zoom on iOS */
+    }
+    .save-btn:hover {
+      background: #e02121;
+    }
+
+    footer {
+      background: #0a0f2c;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      margin-top: auto;
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      z-index: 150;
+    }
+    .overlay.active { display: block; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main {
+        margin-left: 0;
+      }
+      .hamburger {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div>
+      <div class="logo">CMSTUDIO</div>
+      <ul class="nav-links">
+        <li><a href="index.html"><i class="bx bxs-dashboard"></i> Dashboard</a></li>
+        <li><a href="services.html"><i class="bx bx-cog"></i> Services</a></li>
+        <li><a href="about.html"><i class="bx bx-user"></i> About</a></li>
+        <li><a href="portfolio.html"><i class="bx bx-briefcase"></i> Portfolio</a></li>
+        <li><a href="contact.html"><i class="bx bx-envelope"></i> Contact</a></li>
+        <li><a href="media.html"><i class="bx bx-camera"></i> Media</a></li>
+        <li><a href="reports.html"><i class="bx bx-bar-chart-alt"></i> Reports</a></li>
+        <li><a href="help.html"><i class="bx bx-help-circle"></i> Help Center</a></li>
+        <li><a href="settings.html" class="active"><i class="bx bx-cog"></i> Settings</a></li>
+      </ul>
+    </div>
+    <div class="logout" id="logoutBtn">Logout</div>
+  </aside>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <span class="hamburger" id="hamburger"><i class="bx bx-menu"></i></span>
+      <h1>Settings</h1>
+      <div class="profile">
+        <img src="cmstudiologo.png" alt="Logo">
+      </div>
+    </div>
+
+    <div class="content">
+      <form class="settings-form" id="settingsForm">
+        <h2>Update Profile</h2>
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="firstName">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="lastName">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="phone">
+        </div>
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" id="password">
+        </div>
+        <button type="submit" class="save-btn">Save Changes</button>
+      </form>
+    </div>
+
+    <footer>
+      &copy; 2025 Creative Media Studios. All Rights Reserved.
+    </footer>
+  </div>
+
+  <!-- Supabase + Toggle Script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const SUPABASE_URL = "https://bjvifyxbslfestvcrvui.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqdmlmeXhic2xmZXN0dmNydnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4MDE3MTEsImV4cCI6MjA3MjM3NzcxMX0.yoswqDXTF0ZTRzeEocARiWRJmZA_lKIEGzOd5nTyXFs";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Protect page
+    supabaseClient.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        document.getElementById("firstName").value = user.user_metadata.first_name || "";
+        document.getElementById("lastName").value = user.user_metadata.last_name || "";
+        document.getElementById("phone").value = user.user_metadata.phone || "";
+      }
+    });
+
+    // Save settings
+    document.getElementById("settingsForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const firstName = document.getElementById("firstName").value;
+      const lastName = document.getElementById("lastName").value;
+      const phone = document.getElementById("phone").value;
+      const password = document.getElementById("password").value;
+
+      let updates = {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          phone: phone
+        }
+      };
+
+      if (password) {
+        updates.password = password;
+      }
+
+      const { error } = await supabaseClient.auth.updateUser(updates);
+      if (error) {
+        alert("Error: " + error.message);
+      } else {
+        alert("Profile updated successfully!");
+      }
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "login.html";
+    });
+
+    // Sidebar Toggle
+    const sidebar   = document.getElementById("sidebar");
+    const overlay   = document.getElementById("overlay");
+    const hamburger = document.getElementById("hamburger");
+
+    function openDrawer() {
+      sidebar.classList.add("open");
+      overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+    function closeDrawer() {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+
+    hamburger.addEventListener("click", () => {
+      if (sidebar.classList.contains("open")) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    });
+
+    overlay.addEventListener("click", closeDrawer);
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeDrawer();
+    });
+  </script>
+</body>
+</html>

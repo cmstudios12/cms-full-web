@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>About - CMSTUDIO</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f5f6fa;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #0a0f2c, #15234b);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      transition: transform 0.3s ease;
+      z-index: 200;
+    }
+    .sidebar.hide {
+      transform: translateX(-100%);
+    }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ff2b2b;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      color: #ccc;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .nav-links a i { font-size: 1.2rem; }
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: #ff2b2b;
+      color: #fff;
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 150;
+      display: none;
+    }
+    .overlay.show {
+      display: block;
+    }
+
+    /* Main */
+    .main {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+    .main.full {
+      margin-left: 0;
+    }
+
+    /* Topbar */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 120;
+    }
+    .topbar h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #15234b;
+    }
+    .profile {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ff2b2b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 600;
+    }
+    .toggle-btn {
+      display: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #15234b;
+    }
+
+    /* Hero */
+    .about-hero {
+      background: linear-gradient(rgba(10,15,44,0.85), rgba(21,35,75,0.85)), url('assets/img/about-hero.jpg') center/cover no-repeat;
+      color: #fff;
+      text-align: center;
+      padding: 80px 20px;
+      border-radius: 0 0 25px 25px;
+    }
+    .about-hero h2 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+    .about-hero p {
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    /* Sections */
+    .content {
+      padding: 50px 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex: 1;
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+    .about-box {
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      padding: 35px 25px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+    .about-box:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+    .icon-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #ff2b2b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 6px 15px rgba(255,43,43,0.3);
+    }
+    .icon-circle i { color: #fff; font-size: 32px; }
+    .about-box h3 {
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+      color: #15234b;
+    }
+    .about-box p {
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    /* Extra Section */
+    .extra-section {
+      background: #fff;
+      padding: 45px 35px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      margin-bottom: 50px;
+    }
+    .extra-section h3 {
+      font-size: 1.6rem;
+      color: #15234b;
+      margin-bottom: 20px;
+      border-left: 5px solid #ff2b2b;
+      padding-left: 10px;
+    }
+    .extra-section p {
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+
+    footer {
+      background: #0a0f2c;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.show {
+        transform: translateX(0);
+      }
+      .toggle-btn {
+        display: block;
+      }
+      .main {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">CMSTUDIO</div>
+    <ul class="nav-links">
+      <li><a href="index.html"><i class="bx bxs-dashboard"></i> Dashboard</a></li>
+      <li><a href="services.html"><i class="bx bx-layer"></i> Services</a></li>
+      <li><a href="about.html" class="active"><i class="bx bx-user"></i> About</a></li>
+      <li><a href="portfolio.html"><i class="bx bx-briefcase"></i> Portfolio</a></li>
+      <li><a href="contact.html"><i class="bx bx-envelope"></i> Contact</a></li>
+      <li><a href="settings.html"><i class="bx bx-cog"></i> Settings</a></li>
+      <li><a href="logout.html" style="color:#ff4d4d;"><i class="bx bx-log-out"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Main -->
+  <div class="main" id="main">
+    <div class="topbar">
+      <span class="toggle-btn" id="toggleBtn"><i class="bx bx-menu"></i></span>
+      <h1>About Us</h1>
+      <div class="profile" id="profileCircle">CMS</div>
+    </div>
+
+    <div class="about-hero">
+      <h2>Creative Media Studios</h2>
+      <p>
+        Turning ideas into visually stunning digital experiences.  
+        At CMSTUDIO, we combine creativity, technology, and strategy to help brands shine both online and offline.
+      </p>
+    </div>
+
+    <div class="content">
+      <div class="about-grid">
+        <div class="about-box">
+          <div class="icon-circle"><i class="bx bx-target-lock"></i></div>
+          <h3>Our Mission</h3>
+          <p>To empower brands and individuals by combining creativity and technology into meaningful experiences that inspire and connect.</p>
+        </div>
+        <div class="about-box">
+          <div class="icon-circle"><i class="bx bx-world"></i></div>
+          <h3>Our Vision</h3>
+          <p>To become a trusted global leader in digital creativity, shaping the future of how businesses communicate and grow online.</p>
+        </div>
+        <div class="about-box">
+          <div class="icon-circle"><i class="bx bx-bulb"></i></div>
+          <h3>Our Values</h3>
+          <p>Innovation, integrity, and collaboration are at the heart of everything we do. We’re not just designers, we’re problem solvers.</p>
+        </div>
+      </div>
+
+      <div class="extra-section">
+        <h3>Why Choose CMSTUDIO?</h3>
+        <p>✔ We blend design and strategy, not just beautiful visuals, but solutions that actually drive results.</p>
+        <p>✔ A multi-disciplinary team with expertise in branding, development, and marketing.</p>
+        <p>✔ We deliver premium quality with attention to detail, every single time.</p>
+        <p>✔ We treat every project like it’s our own, ensuring passion and dedication from start to finish.</p>
+      </div>
+
+      <div class="extra-section">
+        <h3>Meet Our Team</h3>
+        <p>Behind CMSTUDIO is a team of designers, developers, marketers, photographers, and storytellers.  
+           Each member brings unique skills and perspectives, but together we share a common vision: <strong>helping brands shine online and offline</strong>.</p>
+      </div>
+    </div>
+
+    <footer>
+      &copy; 2025 Creative Media Studios. All Rights Reserved.
+    </footer>
+  </div>
+
+  <script>
+    const toggleBtn = document.getElementById("toggleBtn");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("show");
+      overlay.classList.toggle("show");
+    });
+
+    // Close sidebar when clicking overlay
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("show");
+      overlay.classList.remove("show");
+    });
+
+    // Close sidebar on link click (mobile only)
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        if (window.innerWidth <= 768) {
+          sidebar.classList.remove("show");
+          overlay.classList.remove("show");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

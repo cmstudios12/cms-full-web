@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMSTUDIO Dashboard</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f5f6fa;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #0a0f2c, #15234b);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ff2b2b;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-grow: 1;
+    }
+
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      color: #ccc;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-links a i {
+      font-size: 1.2rem;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: #ff2b2b;
+      color: #fff;
+    }
+
+    /* Logout button */
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: #ff2b2b;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #e02121;
+    }
+
+    /* Main */
+    .main {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Topbar */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #15234b;
+    }
+
+    .profile {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #ff2b2b;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      font-size: 1.8rem;
+      color: #15234b;
+      cursor: pointer;
+    }
+
+    /* Backdrop */
+    .backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 500;
+      display: none;
+    }
+
+    .backdrop.active {
+      display: block;
+    }
+
+    /* Dashboard content */
+    .content {
+      padding: 30px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      font-size: 1.6rem;
+      color: #15234b;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      color: #666;
+      font-size: 1rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .card i {
+      font-size: 2rem;
+      color: #ff2b2b;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      color: #ff2b2b;
+      font-size: 1.2rem;
+    }
+
+    .card p {
+      color: #555;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      min-height: 50px;
+    }
+
+    .card a {
+      display: inline-block;
+      background: #ff2b2b;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card a:hover {
+      background: #d91f1f;
+    }
+
+    /* Loader Overlay */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .loader-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Ellipsis dots */
+    .ellipsis {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ellipsis span {
+      width: 12px;
+      height: 12px;
+      background: #ff2b2b;
+      border-radius: 50%;
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    .ellipsis span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .ellipsis span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+      from {
+        transform: translateY(0);
+        opacity: 0.6;
+      }
+
+      to {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">CMSTUDIO</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active"><i class="bx bxs-dashboard"></i> Dashboard</a></li>
+      <li><a href="services.html"><i class="bx bx-cog"></i> Services</a></li>
+      <li><a href="about.html"><i class="bx bx-user"></i> About</a></li>
+      <li><a href="portfolio.html"><i class="bx bx-briefcase"></i> Portfolio</a></li>
+      <li><a href="contact.html"><i class="bx bx-envelope"></i> Contact</a></li>
+      <li><a href="media.html"><i class="bx bx-camera"></i> Media</a></li>
+      <li><a href="reports.html"><i class="bx bx-bar-chart-alt"></i> Reports</a></li>
+      <li><a href="help.html"><i class="bx bx-help-circle"></i> Help Center</a></li>
+      <li><a href="settings.html"><i class="bx bx-cog"></i> Settings</a></li>
+    </ul>
+    <a href="#" class="logout-btn" id="logoutBtn"><i class="bx bx-log-out"></i> Logout</a>
+  </aside>
+
+  <!-- Backdrop -->
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <i class="bx bx-menu hamburger" id="hamburger"></i>
+      <h1>Dashboard</h1>
+      <div class="profile"></div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="content">
+      <div class="welcome">
+        <h2>Welcome to CMSTUDIO</h2>
+        <p>Explore our services and discover how we transform ideas into visually stunning experiences.</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <i class="bx bx-code-alt"></i>
+          <h3>Web & App Design</h3>
+          <p>Modern, responsive websites and apps that engage your audience.</p>
+          <a href="web-design.html">Learn More</a>
+        </div>
+        <div class="card">
+          <i class="bx bx-palette"></i>
+          <h3>Brand Identity</h3>
+          <p>Logos, colors, and visuals that tell your unique brand story.</p>
+          <a href="brand-identity.html">Learn More</a>
+        </div>
+        <div class="card">
+          <i class="bx bx-bullseye"></i>
+          <h3>Digital Marketing</h3>
+          <p>Social media, ads, and campaigns that boost your online presence.</p>
+          <a href="digital-marketing.html">Learn More</a>
+        </div>
+        <div class="card">
+          <i class="bx bx-camera"></i>
+          <h3>Photography & Video</h3>
+          <p>High-quality media to showcase your products, services, or events.</p>
+          <a href="photography.html">Learn More</a>
+        </div>
+        <div class="card">
+          <i class="bx bx-brush"></i>
+          <h3>Graphic Design</h3>
+          <p>Creative visuals that make your brand stand out everywhere.</p>
+          <a href="graphic-design.html">Learn More</a>
+        </div>
+        <div class="card">
+          <i class="bx bx-brain"></i>
+          <h3>Creative Consulting</h3>
+          <p>Helping businesses craft strategies that make a lasting impression.</p>
+          <a href="consulting.html">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ellipsis Loader -->
+  <div id="loader" class="loader-overlay">
+    <div class="ellipsis">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <script>
+    // Supabase client
+    const SUPABASE_URL = "https://bjvifyxbslfestvcrvui.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqdmlmeXhic2xmZXN0dmNydnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4MDE3MTEsImV4cCI6MjA3MjM3NzcxMX0.yoswqDXTF0ZTRzeEocARiWRJmZA_lKIEGzOd5nTyXFs";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Logout
+    async function logout() {
+      document.getElementById("loader").classList.add("active");
+      await supabase.auth.signOut();
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 800);
+    }
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+
+    // Sidebar toggle
+    const hamburger = document.getElementById("hamburger");
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("backdrop");
+
+    hamburger.addEventListener("click", () => {
+      sidebar.classList.add("active");
+      backdrop.classList.add("active");
+    });
+
+    backdrop.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      backdrop.classList.remove("active");
+    });
+  </script>
+</body>
+
+</html>
