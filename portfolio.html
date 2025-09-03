@@ -235,7 +235,7 @@
       <li><a href="portfolio.html" class="active"><i class="bx bx-briefcase"></i> Portfolio</a></li>
       <li><a href="contact.html"><i class="bx bx-envelope"></i> Contact</a></li>
       <li><a href="settings.html"><i class="bx bx-cog"></i> Settings</a></li>
-      <li><a href="logout.html" style="color:#ff4d4d;"><i class="bx bx-log-out"></i> Logout</a></li>
+      <li><a href="#" style="color:#ff4d4d;"><i class="bx bx-log-out"></i> Logout</a></li>
     </ul>
   </aside>
 
@@ -327,6 +327,15 @@
       });
     });
 
+    async function logout() {
+      await supabase.auth.signOut();
+      window.location.href = "index.html";
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+
+    checkAuth();
+
     // Lightbox
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightboxImg");
@@ -355,3 +364,4 @@
   </script>
 </body>
 </html>
+
