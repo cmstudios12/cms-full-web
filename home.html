@@ -145,18 +145,17 @@
     .profile {
       width: 40px;
       height: 40px;
-      border-radius: 50% !important; /* ✅ Always round */
+      border-radius: 50% !important;
       background: #ff2b2b;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
       cursor: pointer;
-      transition: transform 0.3s ease;
       color: #fff;
       font-weight: 600;
       font-size: 0.95rem;
       text-transform: uppercase;
+      transition: transform 0.3s ease;
     }
     .profile:hover {transform: scale(1.1);}
 
@@ -253,7 +252,7 @@
       margin-top: auto;
     }
 
-    /* Ripple Effect */
+    /* Ripple */
     .ripple {
       position: absolute;
       border-radius: 50%;
@@ -274,19 +273,10 @@
       color: #15234b;
     }
     @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      .sidebar.active {
-        transform: translateX(0);
-      }
-      .main {
-        margin-left: 0;
-      }
-      .hamburger {
-        display: block;
-        margin-right: 15px;
-      }
+      .sidebar {transform: translateX(-100%);}
+      .sidebar.active {transform: translateX(0);}
+      .main {margin-left: 0;}
+      .hamburger {display: block; margin-right: 15px;}
     }
 
     /* Overlay */
@@ -306,7 +296,7 @@
     <div class="sidebar-top">
       <div class="logo">CMSTUDIO</div>
       <ul class="nav-links">
-        <li><a href="home.html" class="active"><i class="bx bxs-dashboard"></i> Dashboard</a></li>
+        <li><a href="index.html" class="active"><i class="bx bxs-dashboard"></i> Dashboard</a></li>
         <li><a href="services.html"><i class="bx bx-cog"></i> Services</a></li>
         <li><a href="about.html"><i class="bx bx-user"></i> About</a></li>
         <li><a href="portfolio.html"><i class="bx bx-briefcase"></i> Portfolio</a></li>
@@ -341,59 +331,27 @@
 
     <!-- Content -->
     <div class="content">
-      <!-- Hero -->
       <div class="hero">
         <h2 id="welcomeText">Welcome</h2>
         <p>Welcome to Creative Media Studios. Where we turn ideas into visually stunning digital experiences that inspire and engage.</p>
         <button>Get Started</button>
       </div>
 
-      <!-- Highlights -->
       <div class="highlight">
-        <div class="highlight-box">
-          <i class="bx bx-rocket"></i>
-          <h3>Innovative Ideas</h3>
-          <p>We create unique concepts that help businesses stand out.</p>
-        </div>
-        <div class="highlight-box">
-          <i class="bx bx-trending-up"></i>
-          <h3>Growth Focused</h3>
-          <p>Our strategies are designed to boost your brand online and offline.</p>
-        </div>
-        <div class="highlight-box">
-          <i class="bx bx-group"></i>
-          <h3>Trusted Team</h3>
-          <p>A passionate creative team dedicated to delivering excellence.</p>
-        </div>
-        <div class="highlight-box">
-          <i class="bx bx-palette"></i>
-          <h3>Creative Design</h3>
-          <p>Modern visuals that align with your brand identity.</p>
-        </div>
+        <div class="highlight-box"><i class="bx bx-rocket"></i><h3>Innovative Ideas</h3><p>We create unique concepts that help businesses stand out.</p></div>
+        <div class="highlight-box"><i class="bx bx-trending-up"></i><h3>Growth Focused</h3><p>Our strategies are designed to boost your brand online and offline.</p></div>
+        <div class="highlight-box"><i class="bx bx-group"></i><h3>Trusted Team</h3><p>A passionate creative team dedicated to delivering excellence.</p></div>
+        <div class="highlight-box"><i class="bx bx-palette"></i><h3>Creative Design</h3><p>Modern visuals that align with your brand identity.</p></div>
       </div>
 
-      <!-- Stats -->
       <div class="stats">
-        <div class="stat-box">
-          <h2>150+</h2>
-          <p>Projects Completed</p>
-        </div>
-        <div class="stat-box">
-          <h2>80+</h2>
-          <p>Satisfied Clients</p>
-        </div>
-        <div class="stat-box">
-          <h2>10+</h2>
-          <p>Years Experience</p>
-        </div>
-        <div class="stat-box">
-          <h2>5</h2>
-          <p>Awards Won</p>
-        </div>
+        <div class="stat-box"><h2>150+</h2><p>Projects Completed</p></div>
+        <div class="stat-box"><h2>80+</h2><p>Satisfied Clients</p></div>
+        <div class="stat-box"><h2>10+</h2><p>Years Experience</p></div>
+        <div class="stat-box"><h2>5</h2><p>Awards Won</p></div>
       </div>
     </div>
 
-    <!-- Footer -->
     <footer>
       &copy; 2025 Creative Media Studios. All Rights Reserved.
     </footer>
@@ -403,31 +361,39 @@
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
     const SUPABASE_URL = "https://bjvifyxbslfestvcrvui.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqdmlmeXhic2xmZXN0dmNydnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4MDE3MTEsImV4cCI6MjA3MjM3NzcxMX0.yoswqDXTF0ZTRzeEocARiWRJmZA_lKIEGzOd5nTyXFs";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function checkAuth() {
       const { data: { user } } = await supabase.auth.getUser();
+
       if (!user) {
         window.location.href = "login.html";
-      } else {
-        const { data } = await supabase
-          .from("profiles")
-          .select("first_name, last_name")
-          .eq("id", user.id)
-          .single();
-
-        if (data) {
-          const fullName = data.first_name + " " + data.last_name;
-          document.getElementById("username").textContent = fullName;
-          document.getElementById("welcomeText").textContent = "Welcome, " + fullName;
-          document.getElementById("profileInitials").textContent =
-            data.first_name.charAt(0).toUpperCase() + data.last_name.charAt(0).toUpperCase();
-        } else {
-          document.getElementById("username").textContent = "User";
-          document.getElementById("welcomeText").textContent = "Welcome, User";
-        }
+        return;
       }
+
+      let displayName = "";
+      let initials = "";
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        displayName = `${profile.first_name} ${profile.last_name}`;
+        initials =
+          (profile.first_name?.charAt(0) || "").toUpperCase() +
+          (profile.last_name?.charAt(0) || "").toUpperCase();
+      } else {
+        displayName = user.email;
+        initials = user.email.charAt(0).toUpperCase();
+      }
+
+      document.getElementById("username").textContent = displayName;
+      document.getElementById("welcomeText").textContent = `Welcome, ${displayName}`;
+      document.getElementById("profileInitials").textContent = initials;
     }
 
     async function logout() {
@@ -471,5 +437,3 @@
   </script>
 </body>
 </html>
-
-
